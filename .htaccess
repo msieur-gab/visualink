@@ -11,11 +11,13 @@ RewriteRule ^generate-qr/([a-zA-Z0-9_-]+)$ generate-qr.php?code=$1 [L]
 RewriteRule ^api/?$ api.php [L]
 RewriteRule ^api/([a-zA-Z0-9_-]+)$ api.php/$1 [L]
 
-# Protect data directory - deny access to all JSON files
-<FilesMatch "\.json$">
-    Order Allow,Deny
-    Deny from all
-</FilesMatch>
+# Protect data directory - only block JSON files in /data/ directory, not system files
+<DirectoryMatch "^/.*data">
+    <FilesMatch "\.json$">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+</DirectoryMatch>
 
 # Disable directory listing
 Options -Indexes
