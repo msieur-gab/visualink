@@ -119,7 +119,7 @@ urlInput.addEventListener('keypress', (e) => {
 
 async function handleScannedUrl(url) {
     try {
-        // Parse URL to extract code
+        // Parse URL to extract code and origin
         const urlObj = new URL(url);
         let code = null;
 
@@ -134,11 +134,16 @@ async function handleScannedUrl(url) {
             return;
         }
 
-        // Try to fetch metadata from API endpoint
+        // Extract the origin (protocol + domain) from the scanned URL
+        const apiBaseUrl = urlObj.origin;
+
+        // Try to fetch metadata from API endpoint on the correct domain
         let metadata = null;
         try {
-            // Try /api/qr/{code} endpoint first
-            const response = await fetch(`/api/qr/${code}`);
+            // Fetch from the domain that issued the QR code
+            const apiUrl = `${apiBaseUrl}/api/qr/${code}`;
+            console.log('Fetching metadata from:', apiUrl);
+            const response = await fetch(apiUrl);
             if (response.ok) {
                 metadata = await response.json();
             }
