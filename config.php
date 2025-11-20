@@ -92,7 +92,8 @@ function anonymizeIp($ip) {
 function setSecurityHeaders() {
     header('X-Frame-Options: DENY');
     header('X-Content-Type-Options: nosniff');
-    header('Content-Security-Policy: default-src \'self\'');
+    // CSP allows self + inline styles/scripts (used in templates) + CDN for Lit framework
+    header('Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net; style-src \'self\' \'unsafe-inline\'');
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 }
 
