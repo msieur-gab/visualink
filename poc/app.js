@@ -53,20 +53,26 @@ async function startCamera() {
 
         console.log('Using camera:', cameras.find(c => c.id === cameraId)?.label || 'Unknown');
 
-        await scanner.start(
-            cameraId,
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 }
+        // Improved scanner configuration for better QR code detection
+        const config = {
+            fps: 30,  // Scan 30 times per second (3x better detection)
+            qrbox: function(viewfinderWidth, viewfinderHeight) {
+                // Make QR detection box responsive (70% of smallest dimension)
+                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                const qrboxSize = Math.floor(minEdge * 0.7);
+                return { width: qrboxSize, height: qrboxSize };
             },
-            onScanSuccess,
-            onScanError
-        );
+            aspectRatio: 1.0,  // Keep square aspect ratio
+            disableFlip: false  // Allow flipped QR codes
+        };
+
+        await scanner.start(cameraId, config, onScanSuccess, onScanError);
 
         isCameraActive = true;
         cameraContainer.classList.remove('hidden');
         toggleCameraBtn.textContent = 'Disable Camera';
         toggleCameraBtn.classList.add('active');
+        showNotification('Camera active - point at QR code', 'info');
     } catch (err) {
         console.error('Camera error:', err);
         alert('Could not access camera: ' + err.message);
@@ -88,13 +94,22 @@ async function stopCamera() {
     toggleCameraBtn.classList.remove('active');
 }
 
-function onScanSuccess(decodedText) {
-    // Extract URL from QR code
-    handleScannedUrl(decodedText);
+async function onScanSuccess(decodedText) {
+    // Stop camera immediately to prevent multiple scans
+    if (isCameraActive) {
+        console.log('QR code detected:', decodedText);
+        await stopCamera();
+        showNotification('QR code detected - processing...', 'success');
+    }
+
+    // Extract URL from QR code and process
+    await handleScannedUrl(decodedText);
 }
 
 function onScanError(error) {
-    // Ignore scanning errors (will just try again next frame)
+    // Silently ignore scanning errors - camera will keep trying
+    // These are normal and happen frequently during scanning
+    // console.debug('Scanner error:', error);
 }
 
 // ============================================================================
@@ -130,7 +145,7 @@ async function handleScannedUrl(url) {
         }
 
         if (!code) {
-            alert('Could not extract QR code from URL');
+            showNotification('Could not extract QR code from URL', 'error');
             return;
         }
 
@@ -146,9 +161,13 @@ async function handleScannedUrl(url) {
             const response = await fetch(apiUrl);
             if (response.ok) {
                 metadata = await response.json();
+                console.log('Metadata fetched successfully:', metadata);
+            } else {
+                console.warn('Metadata fetch returned status:', response.status);
             }
         } catch (err) {
             console.warn('Could not fetch metadata:', err);
+            // Continue anyway - we have the code even if metadata fails
         }
 
         // Store scan in Dexie
