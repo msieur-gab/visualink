@@ -103,7 +103,7 @@ function initializeSecureSession() {
         session_set_cookie_params([
             'secure' => true,      // Only send over HTTPS
             'httponly' => true,    // Not accessible to JavaScript
-            'samesite' => 'Strict' // CSRF protection
+            'samesite' => 'Lax'    // CSRF protection (Lax allows navigation)
         ]);
         session_start();
     }
@@ -117,6 +117,16 @@ function checkAuth() {
     if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated'] !== true) {
         header('Location: /login.php');
         exit;
+    }
+
+    // Check for session timeout (4 hours)
+    if (isset($_SESSION['admin_login_time'])) {
+        $timeout = 4 * 60 * 60; // 4 hours in seconds
+        if (time() - $_SESSION['admin_login_time'] > $timeout) {
+            session_destroy();
+            header('Location: /login.php?expired=1');
+            exit;
+        }
     }
 }
 
