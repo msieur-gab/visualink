@@ -1,0 +1,27 @@
+# Data files
+/data/*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PHP
+.php_cs.cache
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# Dependencies (if any)
+/vendor/
+/node_modules/

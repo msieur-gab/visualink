@@ -1,0 +1,19 @@
+# Enable rewriting
+RewriteEngine On
+
+# Redirect /q/code to redirect.php?code=code
+RewriteRule ^q/([a-zA-Z0-9_-]+)$ redirect.php?code=$1 [L]
+
+# API routes
+RewriteRule ^api/?$ api.php [L]
+RewriteRule ^api/([a-zA-Z0-9_-]+)$ api.php/$1 [L]
+
+# Protect data directory
+<FilesMatch "redirects\.json">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Optional: Force HTTPS (uncomment if you have SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
