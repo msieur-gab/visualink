@@ -1,9 +1,7 @@
 <?php
 require_once 'config.php';
 checkAuth();
-
-// Get credentials for frontend (safely)
-$username = $_SERVER['PHP_AUTH_USER'] ?? '';
+setSecurityHeaders();
 ?>
 <!DOCTYPE html>
 <html lang="en">

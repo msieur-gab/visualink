@@ -8,12 +8,15 @@ RewriteRule ^q/([a-zA-Z0-9_-]+)$ redirect.php?code=$1 [L]
 RewriteRule ^api/?$ api.php [L]
 RewriteRule ^api/([a-zA-Z0-9_-]+)$ api.php/$1 [L]
 
-# Protect data directory
-<FilesMatch "redirects\.json">
+# Protect data directory - deny access to all JSON files
+<FilesMatch "\.json$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
 
-# Optional: Force HTTPS (uncomment if you have SSL)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Disable directory listing
+Options -Indexes
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

@@ -2,7 +2,9 @@
 // login.php - Admin login page
 require_once 'config.php';
 
-session_start();
+// Initialize secure session
+initializeSecureSession();
+setSecurityHeaders();
 
 $error = '';
 $success = false;
@@ -17,7 +19,9 @@ if (isset($_SESSION['admin_authenticated']) && $_SESSION['admin_authenticated'] 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
-    if ($password === ADMIN_PASSWORD) {
+    if (password_verify($password, ADMIN_PASSWORD_HASH)) {
+        // Regenerate session ID to prevent session fixation
+        session_regenerate_id(true);
         $_SESSION['admin_authenticated'] = true;
         $_SESSION['admin_login_time'] = time();
         $success = true;

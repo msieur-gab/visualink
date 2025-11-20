@@ -3,6 +3,7 @@
 // Usage: GET /api/qr/{code} - Returns JSON metadata for apps/PWAs
 require_once 'config.php';
 
+setSecurityHeaders();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');

@@ -1,6 +1,8 @@
 <?php
 // logout.php - Logout endpoint
-session_start();
+require_once 'config.php';
+initializeSecureSession();
+setSecurityHeaders();
 session_destroy();
 header('Location: /login.php');
 exit;

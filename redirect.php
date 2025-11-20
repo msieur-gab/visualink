@@ -2,6 +2,8 @@
 // redirect.php - Public redirect endpoint (QR codes point here)
 require_once 'config.php';
 
+setSecurityHeaders();
+
 // Get the code from URL parameter
 $code = isset($_GET['code']) ? trim($_GET['code']) : '';
 
@@ -16,6 +18,14 @@ $redirect = loadRedirect($code);
 if ($redirect === null) {
     http_response_code(404);
     die('QR code not found');
+}
+
+// Validate redirect URL - only allow http:// and https://
+$targetUrl = $redirect['targetUrl'] ?? '';
+$parsed = parse_url($targetUrl);
+if (!isset($parsed['scheme']) || !in_array($parsed['scheme'], ['http', 'https'])) {
+    http_response_code(400);
+    die('Invalid redirect URL');
 }
 
 // Initialize fields if missing
@@ -58,10 +68,10 @@ $redirect['accessCount']++;
 $redirect['currentUrlScans']++;
 $redirect['lastAccessed'] = date('c');
 
-// Log access
+// Log access with anonymized IP
 $redirect['accessLog'][] = [
     'timestamp' => date('c'),
-    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+    'ip' => anonymizeIp($_SERVER['REMOTE_ADDR'] ?? 'unknown'),
     'userAgent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
 ];
 
@@ -80,6 +90,6 @@ if (!empty($redirect['urlHistory'])) {
 saveRedirect($code, $redirect);
 
 // Redirect to target URL
-header('Location: ' . $redirect['targetUrl']);
+header('Location: ' . $targetUrl);
 exit;
 ?>

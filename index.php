@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 checkAuth();
+setSecurityHeaders();
 ?>
 <!DOCTYPE html>
 <html lang="fr">

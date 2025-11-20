@@ -90,9 +90,9 @@ class QRCreateForm extends LitElement {
       const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${this.auth}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'same-origin',
         body: JSON.stringify({ code, targetUrl, description })
       });
 
@@ -190,7 +190,7 @@ class QRCard extends LitElement {
     try {
       const response = await fetch(`${this.apiUrl}/${this.code}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Basic ${this.auth}` }
+        credentials: 'same-origin'
       });
 
       if (!response.ok) throw new Error('Failed to delete');
@@ -271,7 +271,6 @@ class QRDashboard extends LitElement {
     this.error = '';
     this.pollInterval = 10000;
     this.pollTimer = null;
-    this.auth = btoa(`Admin1234:AdminPassword1234!@#$`);
     // Dynamic base URL - auto-detect from current location
     this.baseUrl = `${window.location.protocol}//${window.location.host}`;
   }
@@ -295,7 +294,7 @@ class QRDashboard extends LitElement {
   async fetchRedirects() {
     try {
       const response = await fetch(this.apiUrl, {
-        headers: { 'Authorization': `Basic ${this.auth}` }
+        credentials: 'same-origin'
       });
 
       if (!response.ok) throw new Error('Failed to fetch');
@@ -329,9 +328,9 @@ class QRDashboard extends LitElement {
       const response = await fetch(`${this.apiUrl}/${code}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${this.auth}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'same-origin',
         body: JSON.stringify({ targetUrl: newUrl })
       });
 
@@ -360,7 +359,6 @@ class QRDashboard extends LitElement {
 
         <qr-create-form
           .apiUrl=${this.apiUrl}
-          .auth=${this.auth}
           @created=${() => this.handleCreated()}>
         </qr-create-form>
 
@@ -381,7 +379,6 @@ class QRDashboard extends LitElement {
                 .code=${code}
                 .data=${data}
                 .apiUrl=${this.apiUrl}
-                .auth=${this.auth}
                 .baseUrl=${this.baseUrl}
                 @edit=${(e) => this.handleEdit(e)}
                 @deleted=${() => this.handleDeleted()}>
