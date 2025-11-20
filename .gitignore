@@ -1,6 +1,9 @@
 # Data files
 /data/*.json
 
+# Cache
+/cache/
+
 # IDE
 .vscode/
 .idea/

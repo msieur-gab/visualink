@@ -205,7 +205,8 @@ class QRCard extends LitElement {
   }
 
   viewQR() {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(`${this.baseUrl}/q/${this.code}`)}`;
+    // Open QR code generated from internal endpoint
+    const qrUrl = `/generate-qr.php?code=${encodeURIComponent(this.code)}&size=400`;
     window.open(qrUrl, '_blank');
   }
 

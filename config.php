@@ -92,8 +92,11 @@ function anonymizeIp($ip) {
 function setSecurityHeaders() {
     header('X-Frame-Options: DENY');
     header('X-Content-Type-Options: nosniff');
-    // CSP allows self + inline styles/scripts (used in templates) + CDN for Lit framework
-    header('Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net; style-src \'self\' \'unsafe-inline\'');
+    // CSP allows:
+    // - self for scripts/styles/images (all served internally)
+    // - unsafe-inline for dashboard inline styles/scripts
+    // - cdn.jsdelivr.net for Lit framework
+    header('Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\' https://cdn.jsdelivr.net; style-src \'self\' \'unsafe-inline\'; img-src \'self\'');
     header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 }
 
