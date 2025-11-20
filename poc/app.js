@@ -138,6 +138,18 @@ async function handleScannedUrl(url) {
         // Extract the origin (protocol + domain) from the scanned URL
         const apiBaseUrl = urlObj.origin;
 
+        // Record scan on server by calling /q/{code} with redirect: 'manual'
+        // This triggers the scan recording logic in redirect.php without following the redirect
+        try {
+            const recordUrl = `${apiBaseUrl}/q/${code}`;
+            console.log('Recording scan on server:', recordUrl);
+            const recordResponse = await fetch(recordUrl, { redirect: 'manual' });
+            console.log('Scan recorded on server with status:', recordResponse.status);
+        } catch (err) {
+            console.warn('Could not record scan on server:', err);
+            // Continue anyway - local storage will still work
+        }
+
         // Try to fetch metadata from API endpoint on the correct domain
         let metadata = null;
         try {
