@@ -3,14 +3,18 @@
 require_once 'config.php';
 
 setSecurityHeaders();
-// Allow CORS for POC apps to record scans
+
+// Add CORS headers to allow cross-origin requests from POC
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
-// Handle CORS preflight
+// Handle CORS preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code(204);
     exit;
 }
 
