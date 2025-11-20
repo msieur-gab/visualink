@@ -7,6 +7,13 @@ $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // Remove leading slash
 $path = ltrim($request_uri, '/');
 
+// Serve login and logout pages
+if (preg_match('#^(login|logout)(\.php)?$#', $path)) {
+    $page = preg_replace('/\.php$/', '', explode('/', $path)[0]);
+    include $page . '.php';
+    return true;
+}
+
 // Serve static assets from assets/ directory
 if (preg_match('#^assets/(.+)$#', $path, $matches)) {
     $file = __DIR__ . '/assets/' . $matches[1];

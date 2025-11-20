@@ -52,12 +52,26 @@ function listAllRedirects() {
 }
 
 function checkAuth() {
-    if (!isset($_SERVER['PHP_AUTH_USER']) || 
+    // Start session if not already started
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Check if user is authenticated via session
+    if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated'] !== true) {
+        header('Location: /login.php');
+        exit;
+    }
+}
+
+function checkAuthAPI() {
+    // For API endpoints - check HTTP Basic Auth
+    if (!isset($_SERVER['PHP_AUTH_USER']) ||
         !isset($_SERVER['PHP_AUTH_PW']) ||
         $_SERVER['PHP_AUTH_PW'] !== ADMIN_PASSWORD) {
         header('WWW-Authenticate: Basic realm="QR Admin"');
         header('HTTP/1.0 401 Unauthorized');
-        echo 'Access denied';
+        echo json_encode(['error' => 'Access denied']);
         exit;
     }
 }

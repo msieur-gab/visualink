@@ -1,7 +1,7 @@
 <?php
 // api.php - Admin API endpoints
 require_once 'config.php';
-checkAuth();
+checkAuthAPI();
 
 header('Content-Type: application/json');
 
