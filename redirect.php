@@ -3,6 +3,16 @@
 require_once 'config.php';
 
 setSecurityHeaders();
+// Allow CORS for POC apps to record scans
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle CORS preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 // Get the code from URL parameter
 $code = isset($_GET['code']) ? trim($_GET['code']) : '';
