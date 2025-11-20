@@ -272,6 +272,8 @@ class QRDashboard extends LitElement {
     this.pollInterval = 10000;
     this.pollTimer = null;
     this.auth = btoa(`Admin1234:AdminPassword1234!@#$`);
+    // Dynamic base URL - auto-detect from current location
+    this.baseUrl = `${window.location.protocol}//${window.location.host}`;
   }
 
   connectedCallback() {
@@ -380,7 +382,7 @@ class QRDashboard extends LitElement {
                 .data=${data}
                 .apiUrl=${this.apiUrl}
                 .auth=${this.auth}
-                .baseUrl=${'http://192.168.86.30:8000'}
+                .baseUrl=${this.baseUrl}
                 @edit=${(e) => this.handleEdit(e)}
                 @deleted=${() => this.handleDeleted()}>
               </qr-card>

@@ -2,7 +2,10 @@
 // config.php - Configuration
 define('DATA_DIR', __DIR__ . '/data');
 define('ADMIN_PASSWORD', 'AdminPassword1234!@#$'); // CHANGE THIS!
-define('QR_BASE_URL', 'http://192.168.86.30:8000'); // Base URL for QR codes
+// Dynamic QR_BASE_URL - auto-detect from request
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
+define('QR_BASE_URL', $protocol . $host); // Auto-detect base URL
 
 // Initialize data directory
 if (!file_exists(DATA_DIR)) {
