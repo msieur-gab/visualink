@@ -37,7 +37,21 @@ async function startCamera() {
             return;
         }
 
-        const cameraId = cameras[0].id; // Use first camera
+        // Prefer rear-facing camera (environment-facing) for QR scanning
+        // Default to last camera (usually rear on mobile), or find by label
+        let cameraId = cameras[cameras.length - 1].id;
+
+        // Try to find environment-facing camera by label
+        const rearCamera = cameras.find(cam => {
+            const label = cam.label.toLowerCase();
+            return label.includes('back') || label.includes('rear') || label.includes('environment');
+        });
+
+        if (rearCamera) {
+            cameraId = rearCamera.id;
+        }
+
+        console.log('Using camera:', cameras.find(c => c.id === cameraId)?.label || 'Unknown');
 
         await scanner.start(
             cameraId,
