@@ -8,10 +8,13 @@ db.version(1).stores({
 });
 
 // ============================================================================
-// QR Scanner Setup
+// QR Scanner Setup (using qr-scanner library)
 // ============================================================================
+import QrScanner from 'https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.min.js';
+
 let scanner = null;
 let isCameraActive = false;
+let videoElement = null;
 
 const toggleCameraBtn = document.getElementById('toggleCamera');
 const cameraContainer = document.getElementById('cameraContainer');
@@ -29,60 +32,49 @@ async function toggleCamera() {
 
 async function startCamera() {
     try {
-        scanner = new Html5Qrcode('scanner');
-
-        const cameras = await Html5Qrcode.getCameras();
-        if (!cameras || cameras.length === 0) {
-            alert('No camera found. Please use manual input.');
-            return;
+        // Create video element if it doesn't exist
+        if (!videoElement) {
+            videoElement = document.createElement('video');
+            videoElement.style.width = '100%';
+            videoElement.style.maxWidth = '500px';
+            videoElement.style.borderRadius = '8px';
+            scannerDiv.innerHTML = '';
+            scannerDiv.appendChild(videoElement);
         }
 
-        // Prefer rear-facing camera (environment-facing) for QR scanning
-        // Default to last camera (usually rear on mobile), or find by label
-        let cameraId = cameras[cameras.length - 1].id;
+        // Initialize scanner with rear camera preference
+        scanner = new QrScanner(
+            videoElement,
+            result => onScanSuccess(result.data),
+            {
+                returnDetailedScanResult: true,
+                highlightScanRegion: true,
+                highlightCodeOutline: true,
+                preferredCamera: 'environment' // Use rear camera
+            }
+        );
 
-        // Try to find environment-facing camera by label
-        const rearCamera = cameras.find(cam => {
-            const label = cam.label.toLowerCase();
-            return label.includes('back') || label.includes('rear') || label.includes('environment');
-        });
-
-        if (rearCamera) {
-            cameraId = rearCamera.id;
-        }
-
-        console.log('Using camera:', cameras.find(c => c.id === cameraId)?.label || 'Unknown');
-
-        // Improved scanner configuration for better QR code detection
-        const config = {
-            fps: 30,  // Scan 30 times per second (3x better detection)
-            qrbox: function(viewfinderWidth, viewfinderHeight) {
-                // Make QR detection box responsive (70% of smallest dimension)
-                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                const qrboxSize = Math.floor(minEdge * 0.7);
-                return { width: qrboxSize, height: qrboxSize };
-            },
-            aspectRatio: 1.0,  // Keep square aspect ratio
-            disableFlip: false  // Allow flipped QR codes
-        };
-
-        await scanner.start(cameraId, config, onScanSuccess, onScanError);
+        // Start scanning
+        await scanner.start();
 
         isCameraActive = true;
         cameraContainer.classList.remove('hidden');
         toggleCameraBtn.textContent = 'Disable Camera';
         toggleCameraBtn.classList.add('active');
         showNotification('Camera active - point at QR code', 'info');
+
+        console.log('QR Scanner started successfully');
     } catch (err) {
         console.error('Camera error:', err);
-        alert('Could not access camera: ' + err.message);
+        showNotification('Could not access camera: ' + err.message, 'error');
     }
 }
 
 async function stopCamera() {
     if (scanner) {
         try {
-            await scanner.stop();
+            scanner.stop();
+            scanner.destroy();
             scanner = null;
         } catch (err) {
             console.error('Error stopping camera:', err);
@@ -104,12 +96,6 @@ async function onScanSuccess(decodedText) {
 
     // Extract URL from QR code and process
     await handleScannedUrl(decodedText);
-}
-
-function onScanError(error) {
-    // Silently ignore scanning errors - camera will keep trying
-    // These are normal and happen frequently during scanning
-    // console.debug('Scanner error:', error);
 }
 
 // ============================================================================
