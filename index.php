@@ -412,12 +412,12 @@ setSecurityHeaders();
                 <p style="margin: 10px 0; font-size: 12px; color: #666;">
                     QR Code pour: ${url}
                 </p>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}" 
-                     alt="QR Code" 
+                <img src="/generate-qr.php?code=${encodeURIComponent(code)}&size=200"
+                     alt="QR Code"
                      class="qr-code">
                 <p style="margin: 10px 0; font-size: 12px;">
-                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}" 
-                       download="qr-${code}.png" 
+                    <a href="/generate-qr.php?code=${encodeURIComponent(code)}&size=500"
+                       download="qr-${code}.png"
                        target="_blank">Télécharger Haute-Res</a>
                 </p>
             `;
