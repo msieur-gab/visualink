@@ -216,7 +216,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="POST" class="login-form">
             <div class="form-group">
-                <label for="password">Password</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label for="password">Password</label>
+                    <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer;">
+                        <input type="checkbox" id="togglePassword" style="cursor: pointer;">
+                        <span style="font-size: 12px;">Show password</span>
+                    </label>
+                </div>
                 <input
                     type="password"
                     id="password"
@@ -228,6 +234,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit">Login</button>
         </form>
+
+        <script>
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            togglePassword.addEventListener('change', function() {
+                passwordInput.type = this.checked ? 'text' : 'password';
+            });
+        </script>
 
         <div class="login-footer">
             <p>Secure admin access to QR code management</p>
