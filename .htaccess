@@ -13,9 +13,12 @@ RewriteRule ^api/qr/([a-zA-Z0-9_-]+)$ api-qr.php [L]
 RewriteRule ^api/?$ api.php [L]
 RewriteRule ^api/([a-zA-Z0-9_-]+)$ api.php/$1 [L]
 
-# Protect data directory - allow manifest.json and other system files
-# Only deny direct access to /data/ directory via rewrite
-RewriteRule ^data/.*\.json$ - [F]
+# Protect data directory - deny direct access to /data/*.json files only
+# Allow all other JSON files (like manifest.json in /poc/)
+<FilesMatch "^/data/.*\.json$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
 
 # Disable directory listing
 Options -Indexes

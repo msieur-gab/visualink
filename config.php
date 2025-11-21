@@ -1,8 +1,8 @@
 <?php
 // config.php - Configuration
 define('DATA_DIR', __DIR__ . '/data');
-// Bcrypt hash of 'SecureAdmin2024!@#$%' - change this password and generate new hash
-define('ADMIN_PASSWORD_HASH', '$2y$12$ma2CvELzeKGyAF4hpMs6Ne/HFtD9NxTEfnaliTcdxnKykye8OqpLa');
+// Bcrypt hash of 'Gab@Muc#14a!'
+define('ADMIN_PASSWORD_HASH', '$2y$12$8nQ5U/G0XUMnNDCMQ8I/7umBx.cJB8.rmFY6fOYRSGwtdTZHuWVle');
 // Dynamic QR_BASE_URL - auto-detect from request
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];

@@ -19,12 +19,6 @@ if (isset($_SESSION['admin_authenticated']) && $_SESSION['admin_authenticated'] 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
-    // DEBUG: Log password details
-    error_log("LOGIN ATTEMPT - Password length: " . strlen($password));
-    error_log("LOGIN ATTEMPT - Password (first 20 chars): " . substr($password, 0, 20));
-    error_log("LOGIN ATTEMPT - Hash: " . ADMIN_PASSWORD_HASH);
-    error_log("LOGIN ATTEMPT - Verify result: " . (password_verify($password, ADMIN_PASSWORD_HASH) ? 'TRUE' : 'FALSE'));
-
     if (password_verify($password, ADMIN_PASSWORD_HASH)) {
         // Regenerate session ID to prevent session fixation
         session_regenerate_id(true);
@@ -34,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: /index-modern.php');
         exit;
     } else {
-        $error = 'Invalid password (Check server logs for debug info)';
+        $error = 'Invalid password';
     }
 }
 ?>
